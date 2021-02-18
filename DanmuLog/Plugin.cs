@@ -6,15 +6,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows;
 using System.ComponentModel;
-using BilibiliDM_PluginFramework;
+using DouyuDM_PluginFramework;
 using System.Windows.Threading;
 using Newtonsoft.Json;
 
 namespace DanmuLog
 {
-    public class Plugin : BilibiliDM_PluginFramework.DMPlugin
+    public class Plugin : DMPlugin
     {
-        public string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"弹幕姬\Plugins\DanmuLog");
+        public string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), @"斗鱼弹幕姬\Plugins\DanmuLog");
         private PluginSettings Settings { get; }
         private SettingWindow SettingWnd { get; }
         public Plugin()
@@ -43,60 +43,41 @@ namespace DanmuLog
             Settings.PropertyChanged += Class1_PropertyChanged;
             this.Connected += Class1_Connected;
             this.Disconnected += Class1_Disconnected;
-            this.ReceivedDanmaku += Class1_ReceivedDanmaku;
-            this.ReceivedRoomCount += Class1_ReceivedRoomCount;
-            this.PluginAuth = "芒小七七七";
+            this.ReceivedMessage += Class1_ReceivedMessage;
+            this.PluginAuth = "Coel Wu & 芒小七七七";
             this.PluginName = "弹幕日志";
-            this.PluginCont = "354311457@qq.com";
+            this.PluginCont = "coelwu78@protonmail.com";
             this.PluginVer = "1.0.0";
             this.PluginDesc = "输出弹幕日志";
         }
 
-        private void Class1_ReceivedRoomCount(object sender, ReceivedRoomCountArgs e)
-        {
-
-        }
-
-        private void Class1_ReceivedDanmaku(object sender, ReceivedDanmakuArgs e)
+        private void Class1_ReceivedMessage(object sender, ReceivedMessageArgs e)
         {
             string Info;
             string Roomid = RoomId.ToString();
-            switch (e.Danmaku.MsgType)
+            switch (e.Message.MsgType)
             {
-                case MsgTypeEnum.LiveStart:
+                case MsgTypeEnum.LiveStatusToggle:
                     {
-                        Log(Roomid + "已开播");
-                        break;
-                    }
-                case MsgTypeEnum.LiveEnd:
-                    {
-                        Log(Roomid + "已下播");
+                        if (e.Message.LiveStatus == 1)
+                        {
+                            Log(Roomid + "已开播");
+                        } else if (e.Message.LiveStatus == 0)
+                        {
+                            Log(Roomid + "已下播");
+                        }
                         break;
                     }
                 case MsgTypeEnum.Comment:
                     {
                         if (Settings.DanmuLog)
                         {
-                            Info = "【弹幕】" + DateTime.Now.ToString("HH:mm:ss.fff") + " : " + e.Danmaku.UserName + " 说：" + e.Danmaku.CommentText;
+                            Info = "【弹幕】" + DateTime.Now.ToString("HH:mm:ss.fff") + " : " + e.Message.UserName + " 说：" + e.Message.CommentText;
                             Output("Log", Info, Roomid);
                         }
                         else
                         {
-                            Info = "{\"TimeStamp\":\"" + DateTime.Now.ToString("HH:mm:ss.fff") + "\", \"Uname\":\"" + e.Danmaku.UserName + "\", \"Comment\":\"" + e.Danmaku.CommentText + "\", \"Type\":\"弹幕\", \"SCTime\":0}";
-                            Output("Data", Info, Roomid);
-                        }
-                        break;
-                    }
-                case MsgTypeEnum.SuperChat:
-                    {
-                        if (Settings.DanmuLog)
-                        {
-                            Info = "【留言】" + DateTime.Now.ToString("HH:mm:ss.fff") + " : " + e.Danmaku.UserName + " 说：" + e.Danmaku.CommentText;
-                            Output("Log", Info, Roomid);
-                        }
-                        else
-                        {
-                            Info = "{\"TimeStamp\":\"" + DateTime.Now.ToString("HH:mm:ss.fff") + "\", \"Uname\":\"" + e.Danmaku.UserName + "\", \"Comment\":\"" + e.Danmaku.CommentText + "\", \"Type\":\"留言\", \"SCTime\":" + e.Danmaku.SCKeepTime.ToString() + "}";
+                            Info = "{\"TimeStamp\":\"" + DateTime.Now.ToString("HH:mm:ss.fff") + "\", \"Uname\":\"" + e.Message.UserName + "\", \"Comment\":\"" + e.Message.CommentText + "\", \"Type\":\"弹幕\", \"SCTime\":0}";
                             Output("Data", Info, Roomid);
                         }
                         break;

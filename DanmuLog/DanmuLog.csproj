@@ -31,11 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BilibiliDM_PluginFramework">
-      <HintPath>..\..\..\..\..\Desktop\sdk(1)\BilibiliDM_PluginFramework.dll</HintPath>
+    <Reference Include="DouyuDM_PluginFramework">
+      <HintPath>.\DouyuDM_PluginFramework.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\Desktop\sdk(1)\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -65,5 +65,11 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>cmd /c copy /Y "$(TargetPath)" "%25USERPROFILE%25\Documents\斗鱼弹幕姬\Plugins\$(TargetFileName)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
